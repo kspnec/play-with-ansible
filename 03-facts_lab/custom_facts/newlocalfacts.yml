@@ -1,0 +1,25 @@
+---
+- name: install custom facts
+  hosts: target1
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: localfacts.fact
+  tasks:
+    - name: create fact dir on remote node
+      file:
+        state: directory
+        recurse: yes
+        path: "{{ remote_dir }}"
+    - name: Install new facts on remote node
+      copy:
+        src: "{{ facts_file }}"
+        dest: "{{ remote_dir }}"
+    - name: install samba package
+      dnf:
+        name: "{{ ansible_facts.ansible_local.localfacts.localfacts.package }}"
+        state: latest
+    - name: start smbd service
+      service:
+        name: "{{ ansible_facts.ansible_local.localfacts.localfacts.service }}"
+        enabled: yes
+        state: started
